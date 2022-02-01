@@ -1,15 +1,13 @@
-#ifndef TRIANGLE_H
-#define TRIANGLE_H
+#pragma once
 
-
-class Triangle
-{
+class Triangle {
  public:
   Triangle();
+  void init();
   void render();
+
  private:
   unsigned int shaderProgram;
   unsigned int VBO, VAO, EBO;
 };
 
-#endif // TRIANGLE_H
