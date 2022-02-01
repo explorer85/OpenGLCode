@@ -8,6 +8,6 @@ class Triangle {
 
  private:
   unsigned int shaderProgram;
-  unsigned int VBO, VAO, EBO;
+  unsigned int VBO, VAO, VAO2, EBO;
 };
 
