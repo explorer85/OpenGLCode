@@ -5,8 +5,9 @@ class Triangle {
  public:
   Triangle();
   void init();
-  void render();
+  void render(glm::mat4 projectionMatrix);
   void translate(float x, float y);
+  void rotate(float angle, int x, int y, int z);
 
  private:
   unsigned int shaderProgram;

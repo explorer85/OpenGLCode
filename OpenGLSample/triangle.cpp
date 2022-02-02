@@ -71,10 +71,10 @@ void Triangle::init() {
   // set up vertex data (and buffer(s)) and configure vertex attributes
   // ------------------------------------------------------------------
   float vertices[] = {
-      0.5f,  0.5f,  0.0f,  // top right
-      0.5f,  -0.5f, 0.0f,  // bottom right
-      -0.5f, -0.5f, 0.0f,  // bottom left
-      -0.5f, 0.5f,  0.0f   // top left
+      50.0f,  50.0f,  0.0f,  // top right
+      50.0f,  -50.0f, 0.0f,  // bottom right
+      -50.0f, -50.0f, 0.0f,  // bottom left
+      -50.0f, 50.0f,  0.0f   // top left
   };
   unsigned int indices[] = {
       // note that we start from 0!
@@ -116,7 +116,7 @@ void Triangle::init() {
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void Triangle::render() {
+void Triangle::render(glm::mat4 projectionMatrix) {
 
 
   // draw our first triangle
@@ -125,7 +125,7 @@ void Triangle::render() {
 
 
   glUseProgram(shaderProgram);
-  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(modelViewMatrix_));
+  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(projectionMatrix * modelViewMatrix_));
 
 
   //VAO
@@ -143,4 +143,8 @@ void Triangle::render() {
 
 void Triangle::translate(float x, float y) {
   modelViewMatrix_ = glm::translate(modelViewMatrix_, glm::vec3(x, y, 0.0f));
+}
+
+void Triangle::rotate(float angle, int x, int y, int z) {
+  modelViewMatrix_ = glm::rotate(modelViewMatrix_, glm::radians(angle), glm::vec3(x, y, z));
 }

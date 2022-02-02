@@ -64,11 +64,13 @@ int main(void) {
 
   Triangle t1;
   t1.init();
-  t1.translate(0.0, 0.0);
+  t1.translate(100, 100);
 
   Triangle t2;
   t2.init();
-  t2.translate(0.5, 0.5);
+  t2.translate(400, 400);
+  t2.rotate(60.0, 1.0, 0.0, 0.0);
+
 
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
@@ -77,8 +79,13 @@ int main(void) {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    t1.render();
-    t2.render();
+
+    glm::mat4 projectionMatrix = glm::mat4(1.0);
+    projectionMatrix = glm::ortho(0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT, -100.0f, 100.0f);
+
+
+    t1.render(projectionMatrix);
+    t2.render(projectionMatrix);
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
