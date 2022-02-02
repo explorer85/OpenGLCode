@@ -86,10 +86,8 @@ void Triangle::init() {
   glGenVertexArrays(1, &VAO2);
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &EBO);
-  // bind the Vertex Array Object first, then bind and set vertex buffer(s), and
-  // then configure vertex attributes(s).
+//VAO start
   glBindVertexArray(VAO);
-
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -99,23 +97,10 @@ void Triangle::init() {
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
-
-  // note that this is allowed, the call to glVertexAttribPointer registered VBO
-  // as the vertex attribute's bound vertex buffer object so afterwards we can
-  // safely unbind
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  // remember: do NOT unbind the EBO while a VAO is active as the bound element
-  // buffer object IS stored in the VAO; keep the EBO bound.
-  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  // You can unbind the VAO afterwards so other VAO calls won't accidentally
-  // modify this VAO, but this rarely happens. Modifying other VAOs requires a
-  // call to glBindVertexArray anyways so we generally don't unbind VAOs (nor
-  // VBOs) when it's not directly necessary.
   glBindVertexArray(0);
 
-
+//VAO2 start
   glBindVertexArray(VAO2);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -133,33 +118,29 @@ void Triangle::init() {
 
 void Triangle::render() {
 
-  //identity matrix
-  GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
-  glm::mat4 trans = glm::mat4(1.0);
-
 
   // draw our first triangle
   int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-  glUniform4f(vertexColorLocation, 0.0f, 0.0, 1.0f, 1.0f);
+  int transformLoc = glGetUniformLocation(shaderProgram, "transform");
 
 
   glUseProgram(shaderProgram);
-
-
-
+  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(modelViewMatrix_));
 
 
   //VAO
-  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+  glUniform4f(vertexColorLocation, 0.0f, 0.0, 1.0f, 1.0f);
   glBindVertexArray(VAO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
   //VAO2 
-  trans = glm::translate(trans, glm::vec3(0.3f, 0.0f, 0.0f));
-  //trans = glm::rotate(trans, glm::radians(10.0f), glm::vec3(0.0f, 0.0f, 0.5f));
-  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
   glUniform4f(vertexColorLocation, 0.0f, 0.3, 0.0f, 1.0f);
 
  glBindVertexArray(VAO2);  // no need to unbind it every time
- glDrawArrays(GL_TRIANGLES, 0, 6);
+ glLineWidth(3.0);
+ glDrawArrays(GL_LINE_LOOP, 0, 4);
+}
+
+void Triangle::translate(float x, float y) {
+  modelViewMatrix_ = glm::translate(modelViewMatrix_, glm::vec3(x, y, 0.0f));
 }

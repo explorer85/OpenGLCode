@@ -62,8 +62,13 @@ int main(void) {
     return -1;
   }
 
-  Triangle t;
-  t.init();
+  Triangle t1;
+  t1.init();
+  t1.translate(0.0, 0.0);
+
+  Triangle t2;
+  t2.init();
+  t2.translate(0.5, 0.5);
 
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
@@ -72,7 +77,8 @@ int main(void) {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    t.render();
+    t1.render();
+    t2.render();
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
