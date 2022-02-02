@@ -4,6 +4,10 @@
 #include <GLFW/glfw3.h>
 #include "triangle.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -14,7 +18,23 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
+void error_callback(int error, const char* description)
+{
+  fprintf(stderr, "Error: %s\n", description);
+}
+
 int main(void) {
+
+  glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+  glm::mat4 trans = glm::mat4(1.0);
+  //trans = glm::translate(trans, glm::vec3(0.1f, 0.1f, 0.0f));
+  vec = trans * vec;
+  std::cout << vec.x << " " << vec.y << " " << vec.z << std::endl;
+
+
+
+
+
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -24,6 +44,7 @@ int main(void) {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+    glfwSetErrorCallback(error_callback);
   // glfw window creation
   // --------------------
   GLFWwindow* window =

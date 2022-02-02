@@ -2,13 +2,17 @@
 
 #include <iostream>
 #include "glad/include/glad/glad.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 const char *vertexShaderSource =
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "uniform mat4 transform;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
 const char *fragmentShaderSource =
     "#version 330 core\n"
@@ -128,21 +132,32 @@ void Triangle::init() {
 }
 
 void Triangle::render() {
+
+  //identity matrix
+  GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
+  glm::mat4 trans = glm::mat4(1.0);
+
+
   // draw our first triangle
   int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
   glUniform4f(vertexColorLocation, 0.0f, 0.0, 1.0f, 1.0f);
+
+
   glUseProgram(shaderProgram);
 
 
 
+
+
   //VAO
-
-
+  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
   glBindVertexArray(VAO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-  //VAO2
-  // update the uniform color
+  //VAO2 
+  trans = glm::translate(trans, glm::vec3(0.3f, 0.0f, 0.0f));
+  //trans = glm::rotate(trans, glm::radians(10.0f), glm::vec3(0.0f, 0.0f, 0.5f));
+  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
   glUniform4f(vertexColorLocation, 0.0f, 0.3, 0.0f, 1.0f);
 
  glBindVertexArray(VAO2);  // no need to unbind it every time
