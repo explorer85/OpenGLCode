@@ -76,6 +76,7 @@ void Triangle::init() {
       -50.0f, -50.0f, 0.0f,  // bottom left
       -50.0f, 50.0f,  0.0f   // top left
   };
+
   unsigned int indices[] = {
       // note that we start from 0!
       0, 1, 3,  // first Triangle

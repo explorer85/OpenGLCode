@@ -23,6 +23,29 @@ void error_callback(int error, const char* description)
   fprintf(stderr, "Error: %s\n", description);
 }
 
+
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+
+      GLfloat cameraSpeed = 4.05f;
+      if(key == GLFW_KEY_W) {
+    cameraPos -= cameraSpeed * cameraUp;
+
+      }
+  if(key == GLFW_KEY_S)
+    cameraPos += cameraSpeed * cameraUp;
+
+  //пользуемся свойствами веторного произведения векторов
+  //(перемена мест множителей дает другое ноправление нормали)
+  if(key == GLFW_KEY_A)
+    cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+  if(key == GLFW_KEY_D)
+    cameraPos += glm::normalize(glm::cross(cameraUp, cameraFront)) * cameraSpeed;
+}
+
 int main(void) {
 
   glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
@@ -56,6 +79,7 @@ int main(void) {
   }
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  glfwSetKeyCallback(window, key_callback);
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cout << "Failed to initialize GLAD" << std::endl;
@@ -83,9 +107,12 @@ int main(void) {
     glm::mat4 projectionMatrix = glm::mat4(1.0);
     projectionMatrix = glm::ortho(0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT, -100.0f, 100.0f);
 
+    std::cout << "Failed to create GLFW window" << " x " << cameraPos.x << " y " << cameraPos.y   << " z " << cameraPos.z << std::endl;
+    glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-    t1.render(projectionMatrix);
-    t2.render(projectionMatrix);
+
+    t1.render(projectionMatrix * viewMatrix);
+    t2.render(projectionMatrix * viewMatrix);
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
