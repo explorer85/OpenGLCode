@@ -44,12 +44,20 @@ std::pair<glm::vec2, glm::vec2>  sectorBounds(glm::vec2 direction, float angle) 
   return make_pair(sectorStart, sectorEnd);
 }
 
-bool isInsideSector(Unit seesUnit, Unit unit) {
+bool isInsideSector() {
+
+  return true;
+}
+
+bool isSeeUnit(Unit seesUnit, Unit unit) {
   auto bounds = sectorBounds(seesUnit.direction(), sector);
 
   cout << seesUnit.direction().x << " " << seesUnit.direction().y << endl;
   cout << bounds.first.x << " " << bounds.first.y << " " << bounds.second.x << " " << bounds.second.y << endl;
+  isInsideSector();
 }
+
+
 
 int main() {
   cout << "Hello World!" << endl;
@@ -68,7 +76,7 @@ int main() {
 
     for (const auto& unit : units) {
       if (seesUnit.id() != unit.id()) {
-        isInsideSector(seesUnit, unit);
+        isSeeUnit(seesUnit, unit);
       }
     }
   }
