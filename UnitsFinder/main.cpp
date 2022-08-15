@@ -1,5 +1,6 @@
 #include "IsSeeUnit.hpp"
 
+#include <future>
 #include "csv.h"
 
 #define RUN_TESTS
@@ -33,28 +34,45 @@ int main() {
     assert(!res.first && res.second);
   }
 
+  //test 10000
   {
     vector<Unit> units;
     for (int i = 0; i < 10000; i++) {
-      units.emplace_back(Unit{std::to_string(i), glm::vec2{1, 1}, glm::vec2{1, 1}});
+      units.emplace_back(
+          Unit{std::to_string(i), glm::vec2{1, 1}, glm::vec2{1, 1}});
     }
 
-    for (const auto& seesUnit : units) {
-      for (const auto& unit : units) {
-        if (seesUnit.id() != unit.id()) {
-          string seesStr;
-          if (isSeeUnit(seesUnit, unit))
-            seesStr = " sees ";
-          else
-            seesStr = " not sees ";
+    // worker
+    auto isSeesWorker = [](const Unit seesUnit, const vector<Unit>& units) {
+       string res;
+      for (const auto unit : units) {
+         if (seesUnit.id() != unit.id()) {
+           string seesStr;
+         if (isSeeUnit(seesUnit, unit))
+          seesStr = " sees ";
+         else
+          seesStr = " not sees ";
 
-            cout << "Unit " << seesUnit.id() << seesStr
-                 << "Unit " << unit.id() << endl;
+         string resStr = "Unit " + seesUnit.id() + seesStr + "Unit " + unit.id() + "\n";
 
-        }
+         res.append(resStr);
+           }
       }
+
+      return res;
+    };
+
+    vector<future<string>> futures;
+    for (const auto& seesUnit : units) {
+      futures.emplace_back(
+          std::async(std::launch::async, isSeesWorker, seesUnit, std::ref(units)));
     }
 
+    // result
+    cout << "result" << endl;
+    for (auto& fut : futures) {
+      cout << fut.get() << endl;
+    }
   }
   return 0;
 
