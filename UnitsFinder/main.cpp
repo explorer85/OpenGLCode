@@ -33,6 +33,31 @@ int main() {
     assert(!res.first && res.second);
   }
 
+  {
+    vector<Unit> units;
+    for (int i = 0; i < 10000; i++) {
+      units.emplace_back(Unit{std::to_string(i), glm::vec2{1, 1}, glm::vec2{1, 1}});
+    }
+
+    for (const auto& seesUnit : units) {
+      for (const auto& unit : units) {
+        if (seesUnit.id() != unit.id()) {
+          string seesStr;
+          if (isSeeUnit(seesUnit, unit))
+            seesStr = " sees ";
+          else
+            seesStr = " not sees ";
+
+            cout << "Unit " << seesUnit.id() << seesStr
+                 << "Unit " << unit.id() << endl;
+
+        }
+      }
+    }
+
+  }
+  return 0;
+
 #endif
 
   io::CSVReader<5> in("units.csv");
