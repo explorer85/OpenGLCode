@@ -3,7 +3,6 @@
 
 
 int main() {
-  cout << "Hello World!" << endl;
   //test
 //  {
 //    Unit u1{"1", glm::vec2{1.f, 1.f}, glm::vec2{0.f, 1.f}};
@@ -26,7 +25,8 @@ int main() {
 
     for (const auto& unit : units) {
       if (seesUnit.id() != unit.id()) {
-        cout << isSeeUnit(seesUnit, unit) << endl;
+        if (isSeeUnit(seesUnit, unit))
+          cout << "Unit " << seesUnit.id() << " sees " << "Unit " << unit.id() << endl;
       }
     }
   }
