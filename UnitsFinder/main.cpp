@@ -32,10 +32,6 @@ class Unit {
 };
 
 
-//bool areClockwise(v1, v2) {
-//  return -v1.x*v2.y + v1.y*v2.x > 0;
-//}
-
 
 std::pair<glm::vec2, glm::vec2>  sectorBounds(glm::vec2 direction, float angle) {
   float angleDiv2 = angle/2.0;
@@ -44,9 +40,25 @@ std::pair<glm::vec2, glm::vec2>  sectorBounds(glm::vec2 direction, float angle) 
   return make_pair(sectorStart, sectorEnd);
 }
 
-bool isInsideSector() {
+bool areCounterClockwise(glm::vec2 v1, glm::vec2 v2) {
+  glm::vec2 n1 = {-v1.y, v1.x};
+  float proj =  v2.x*n1.x + v2.y*n1.y;
+  return proj > 0;
+}
 
-  return true;
+bool isWithinRadius(glm::vec2 v, float radiusSquared) {
+  return v.x*v.x + v.y*v.y <= radiusSquared;
+}
+
+bool isInsideSector(glm::vec2 point, glm::vec2 sectorCenter, glm::vec2 sectorStart, glm::vec2 sectorEnd, float radiusSquared) {
+
+  auto relPoint =  point - sectorCenter;
+
+  bool counterClockwiseRelStart = areCounterClockwise(sectorStart, relPoint);
+  bool counterClockwiseRelEnd = areCounterClockwise(sectorEnd, relPoint);
+
+  return counterClockwiseRelStart && !counterClockwiseRelEnd && isWithinRadius(relPoint, radiusSquared);
+
 }
 
 bool isSeeUnit(Unit seesUnit, Unit unit) {
@@ -54,13 +66,20 @@ bool isSeeUnit(Unit seesUnit, Unit unit) {
 
   cout << seesUnit.direction().x << " " << seesUnit.direction().y << endl;
   cout << bounds.first.x << " " << bounds.first.y << " " << bounds.second.x << " " << bounds.second.y << endl;
-  isInsideSector();
+  return isInsideSector(unit.position(), seesUnit.position(), bounds.first, bounds.second, dist * dist);
 }
 
 
 
 int main() {
   cout << "Hello World!" << endl;
+  //test
+//  {
+//    Unit u1{"1", glm::vec2{1.f, 1.f}, glm::vec2{0.f, 1.f}};
+//    Unit u2{"2", glm::vec2{1.f, 2.f}, glm::vec2{1.f, 0.f}};
+//    cout << isSeeUnit(u1, u2) << endl;
+
+//  }
 
 
 
@@ -76,7 +95,7 @@ int main() {
 
     for (const auto& unit : units) {
       if (seesUnit.id() != unit.id()) {
-        isSeeUnit(seesUnit, unit);
+        cout << isSeeUnit(seesUnit, unit) << endl;
       }
     }
   }
