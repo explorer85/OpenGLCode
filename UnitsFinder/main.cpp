@@ -1,7 +1,11 @@
-#include "IsSeeUnit.hpp"
+
 
 #include <future>
+#include <GLFW/glfw3.h>
+
 #include "csv.h"
+#include "IsSeeUnit.hpp"
+
 
 //#define RUN_TESTS
 constexpr int kMaxThreadCount = 20;
@@ -48,6 +52,21 @@ void compareAllUnits(const vector<Unit>& units) {
     }
   }
 
+}
+
+// settings
+constexpr unsigned int SCR_WIDTH = 800;
+constexpr unsigned int SCR_HEIGHT = 600;
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+  // make sure the viewport matches the new window dimensions; note that width
+  // and height will be significantly larger than specified on retina displays.
+  glViewport(0, 0, width, height);
+}
+
+void error_callback(int error, const char* description)
+{
+  fprintf(stderr, "Error: %s\n", description);
 }
 
 int main() {
@@ -101,6 +120,75 @@ int main() {
 
 
   compareAllUnits(units);
+
+
+
+  glfwInit();
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
+  glfwSetErrorCallback(error_callback);
+  // glfw window creation
+  // --------------------
+  GLFWwindow* window =
+      glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+  if (window == NULL) {
+    std::cout << "Failed to create GLFW window" << std::endl;
+    glfwTerminate();
+    return -1;
+  }
+  glfwMakeContextCurrent(window);
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+ // glfwSetKeyCallback(window, key_callback);
+
+ // if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+  //  std::cout << "Failed to initialize GLAD" << std::endl;
+  //  return -1;
+ // }
+
+//  Triangle t1;
+//  t1.init();
+//  t1.translate(100, 100);
+
+//  Triangle t2;
+//  t2.init();
+//  t2.translate(400, 400);
+//  t2.rotate(60.0, 1.0, 0.0, 0.0);
+
+  glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+  glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+  glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+
+  /* Loop until the user closes the window */
+  while (!glfwWindowShouldClose(window)) {
+    // std::cout << "gfgggggg" << std::endl;
+    /* Render here */
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+
+    glm::mat4 projectionMatrix = glm::mat4(1.0);
+    projectionMatrix = glm::ortho(0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT, -100.0f, 100.0f);
+
+    std::cout << "Failed to create GLFW window" << " x " << cameraPos.x << " y " << cameraPos.y   << " z " << cameraPos.z << std::endl;
+    glm::mat4 viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+
+   // t1.render(projectionMatrix * viewMatrix);
+   // t2.render(projectionMatrix * viewMatrix);
+
+    /* Swap front and back buffers */
+    glfwSwapBuffers(window);
+    /* Poll for and process events */
+    glfwPollEvents();
+  }
+
+  glfwTerminate();
 
 
 

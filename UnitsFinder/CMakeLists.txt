@@ -8,6 +8,8 @@ set(SOURCES csv.h IsSeeUnit.hpp)
 
 add_executable(UnitsFinder main.cpp)
 
+
+
 find_package(Threads REQUIRED)
-target_link_libraries(UnitsFinder PRIVATE Threads::Threads)
+target_link_libraries(UnitsFinder PRIVATE Threads::Threads glfw GL dl)
 
