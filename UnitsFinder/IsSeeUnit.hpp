@@ -10,8 +10,8 @@ using namespace std;
 #include <vector>
 #include <iostream>
 
-const float sector = 135.5;
-const int dist = 2;
+constexpr float sector = 135.5;
+constexpr int dist = 2;
 
 class Unit {
  public:
@@ -65,9 +65,6 @@ bool isInsideSector(glm::vec2 point, glm::vec2 sectorCenter, glm::vec2 sectorSta
 
 bool isSeeUnit(Unit seesUnit, Unit unit) {
   auto bounds = sectorBounds(seesUnit.direction(), sector);
-
-  //cout << seesUnit.direction().x << " " << seesUnit.direction().y << endl;
-  //cout << bounds.first.x << " " << bounds.first.y << " " << bounds.second.x << " " << bounds.second.y << endl;
   return isInsideSector(unit.position(), seesUnit.position(), bounds.first, bounds.second, dist * dist);
 }
 
