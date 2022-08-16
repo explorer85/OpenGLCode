@@ -3,10 +3,51 @@
 #include <future>
 #include "csv.h"
 
-#define RUN_TESTS
+//#define RUN_TESTS
+constexpr int kMaxThreadCount = 20;
 
 std::pair<bool, bool> testIsSees(const Unit& u1, const Unit& u2) {
   return make_pair(isSeeUnit(u1, u2), isSeeUnit(u2, u1));
+}
+
+// isSeesWorker
+auto compareUnitWithOtherUnits(const Unit seesUnit, const vector<Unit>& units) {
+  string res;
+  for (const auto unit : units) {
+    if (seesUnit.id() != unit.id()) {
+      string seesStr;
+      if (isSeeUnit(seesUnit, unit))
+        seesStr = " sees ";
+      else
+        seesStr = " not sees ";
+
+      string resStr =
+          "Unit " + seesUnit.id() + seesStr + "Unit " + unit.id() + "\n";
+
+      res.append(resStr);
+    }
+  }
+
+  return res;
+}
+
+void compareAllUnits(const vector<Unit>& units) {
+
+  vector<future<string>> results;
+  results.reserve(kMaxThreadCount);
+  for (auto it = units.begin(); it != units.end(); it++) {
+    results.emplace_back(
+        std::async(std::launch::async, compareUnitWithOtherUnits, *it, std::ref(units)));
+    // get results
+    if (results.size() == kMaxThreadCount or (it + 1) == units.end()) {
+      for (auto& res : results) {
+        cout << res.get() << endl;
+      }
+      results.clear();
+      results.reserve(kMaxThreadCount);
+    }
+  }
+
 }
 
 int main() {
@@ -34,7 +75,7 @@ int main() {
     assert(!res.first && res.second);
   }
 
-  //test 10000
+  // test 10000
   {
     vector<Unit> units;
     for (int i = 0; i < 10000; i++) {
@@ -42,37 +83,7 @@ int main() {
           Unit{std::to_string(i), glm::vec2{1, 1}, glm::vec2{1, 1}});
     }
 
-    // worker
-    auto isSeesWorker = [](const Unit seesUnit, const vector<Unit>& units) {
-       string res;
-      for (const auto unit : units) {
-         if (seesUnit.id() != unit.id()) {
-           string seesStr;
-         if (isSeeUnit(seesUnit, unit))
-          seesStr = " sees ";
-         else
-          seesStr = " not sees ";
-
-         string resStr = "Unit " + seesUnit.id() + seesStr + "Unit " + unit.id() + "\n";
-
-         res.append(resStr);
-           }
-      }
-
-      return res;
-    };
-
-    vector<future<string>> futures;
-    for (const auto& seesUnit : units) {
-      futures.emplace_back(
-          std::async(std::launch::async, isSeesWorker, seesUnit, std::ref(units)));
-    }
-
-    // result
-    cout << "result" << endl;
-    for (auto& fut : futures) {
-      cout << fut.get() << endl;
-    }
+    compareAllUnits(units);
   }
   return 0;
 
@@ -88,15 +99,10 @@ int main() {
     units.emplace_back(Unit{id, glm::vec2{px, py}, glm::vec2{dx, dy}});
   }
 
-  for (const auto& seesUnit : units) {
-    for (const auto& unit : units) {
-      if (seesUnit.id() != unit.id()) {
-        if (isSeeUnit(seesUnit, unit))
-          cout << "Unit " << seesUnit.id() << " sees "
-               << "Unit " << unit.id() << endl;
-      }
-    }
-  }
+
+  compareAllUnits(units);
+
+
 
   return 0;
 }
